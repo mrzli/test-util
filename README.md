@@ -51,7 +51,9 @@ npm install --save-dev @gmjs/test-util
               ```
               In the above example, `<shared>` will simply be replaced with whatever is present in `sharedDirectoryRelativePath`
           - Default - `'.'`
+
 ---
+
 - `filesToTestString(files: readonly FilePathContentAny[]): string`
   - Description
     - Converts a list of path-content pairs to a string that can be used for comparison in tests.
