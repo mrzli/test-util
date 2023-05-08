@@ -1,0 +1,6 @@
+{
+  "extends": "@gmjs/tsconfig",
+  "compilerOptions": {
+    "outDir": "./dist"
+  }
+}
