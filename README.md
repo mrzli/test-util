@@ -54,11 +54,16 @@ npm install --save-dev @gmjs/test-util
 
 ---
 
-- `filesToTestString(files: readonly FilePathContentAny[]): string`
+- ```
+  function filesToTestString(
+    textFiles: readonly FilePathTextContent[],
+    binaryFiles: readonly FilePathBinaryContent[]
+  ): string
+  ```
   - Description
     - Converts a list of path-content pairs to a string that can be used for comparison in tests.
     - For binary files, only a literal token `<binary>` and a hash are output for content.
-    - Files are sorted by path, alphabetically, ascending.
+    - Text and binary file lists are joined, then sorted by path, alphabetically, ascending.
     - The produced format is as follows:
       ```
       --------------------

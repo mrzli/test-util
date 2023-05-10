@@ -1,6 +1,7 @@
 import { join } from 'node:path';
 import { readBinaryAsync, readTextAsync } from '@gmjs/fs-async';
-import { FilePathContentAny, PathMapping } from '../types';
+import { FakeFiles, PathMapping } from '../types';
+import { FilePathBinaryContent, FilePathTextContent } from '@gmjs/fs-shared';
 
 export interface ReadFakeFilesOptions {
   readonly sharedDirectoryRelativePath?: string;
@@ -9,7 +10,7 @@ export interface ReadFakeFilesOptions {
 export async function readFakeFiles(
   directory: string,
   options?: ReadFakeFilesOptions
-): Promise<readonly FilePathContentAny[]> {
+): Promise<FakeFiles> {
   const finalOptions = getFinalOptions(options);
   const { sharedDirectoryRelativePath } = finalOptions;
 
@@ -20,11 +21,15 @@ export async function readFakeFiles(
   const pathMapping: readonly PathMapping[] =
     parsePathMapping(pathMappingContent);
 
-  const textFiles: readonly FilePathContentAny[] = await Promise.all(
+  const filesDirectory = join(directory, 'files');
+
+  const textFiles: readonly FilePathTextContent[] = await Promise.all(
     pathMapping
       .filter((entry) => entry.testFile.endsWith(TEXT_EXTENSION))
       .map(async (entry) => {
-        const content = await readTextAsync(join(directory, entry.testFile));
+        const content = await readTextAsync(
+          join(filesDirectory, entry.testFile)
+        );
         return {
           kind: 'text',
           path: entry.path,
@@ -33,11 +38,13 @@ export async function readFakeFiles(
       })
   );
 
-  const binaryFiles: readonly FilePathContentAny[] = await Promise.all(
+  const binaryFiles: readonly FilePathBinaryContent[] = await Promise.all(
     pathMapping
       .filter((entry) => entry.testFile.endsWith(BINARY_EXTENSION))
       .map(async (entry) => {
-        const content = await readBinaryAsync(join(directory, entry.testFile));
+        const content = await readBinaryAsync(
+          join(filesDirectory, entry.testFile)
+        );
         return {
           kind: 'binary',
           path: entry.path,
@@ -46,7 +53,10 @@ export async function readFakeFiles(
       })
   );
 
-  return [...textFiles, ...binaryFiles];
+  return {
+    textFiles,
+    binaryFiles,
+  };
 }
 
 function getFinalOptions(

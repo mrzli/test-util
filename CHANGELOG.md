@@ -4,6 +4,12 @@ All notable changes to the "test-util" will be documented in this file.
 
 ## [Unreleased]
 
+## [0.0.2] - 2023-05-10
+
+### Changed
+
+- **Breaking:** Update `filesToTestString()` and `readFakeFiles()` functions.
+
 ## [0.0.1] - 2023-05-08
 
 ### Added

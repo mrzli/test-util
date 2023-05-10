@@ -1,22 +1,22 @@
 import { describe, expect, it } from '@jest/globals';
 import { filesToTestString } from './files-to-test-string';
-import { FilePathContentAny } from '../types/file-content';
+import { FilePathBinaryContent, FilePathTextContent } from '@gmjs/fs-shared';
 
 describe('files-to-test-string', () => {
   it('should return a proper test string', () => {
-    const input: readonly FilePathContentAny[] = [
+    const textFiles: readonly FilePathTextContent[] = [
       {
-        kind: 'text',
         path: 'src/example3.txt',
         content: 'Some content 3',
       },
       {
-        kind: 'text',
         path: 'src/example1.txt',
         content: 'Some content 1',
       },
+    ];
+
+    const binaryFiles: readonly FilePathBinaryContent[] = [
       {
-        kind: 'binary',
         path: 'example2.bin',
         content: Buffer.from('736f6d652076616c7565', 'hex'), // 'some value' as binary data
       },
@@ -41,6 +41,6 @@ Some content 3
 --------------------
     `.trim() + '\n';
 
-    expect(filesToTestString(input)).toBe(expected);
+    expect(filesToTestString(textFiles, binaryFiles)).toBe(expected);
   });
 });

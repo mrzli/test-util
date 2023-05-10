@@ -1,25 +1,33 @@
+import { FilePathBinaryContent, FilePathTextContent } from '@gmjs/fs-shared';
 import { hashMd5Hex } from '@gmjs/crypto';
-import { FilePathContentAny } from '../types';
 
 export function filesToTestString(
-  files: readonly FilePathContentAny[]
+  textFiles: readonly FilePathTextContent[],
+  binaryFiles: readonly FilePathBinaryContent[]
 ): string {
-  const sortedFiles = [...files].sort((a, b) => a.path.localeCompare(b.path));
-  return (
-    sortedFiles.map((element) => fileToTestString(element)).join('\n') + '\n'
+  const normalizedFiles: FilePathTextContent[] = [
+    ...textFiles,
+    ...binaryFiles.map((file) => normalizeBinaryFile(file)),
+  ];
+  const sortedFiles = normalizedFiles.sort((a, b) =>
+    a.path.localeCompare(b.path)
   );
+  const fileStrings = sortedFiles.map((element) =>
+    fileToTestString(element.path, element.content)
+  );
+
+  return fileStrings.join('\n') + '\n';
 }
 
-function fileToTestString(file: FilePathContentAny): string {
-  return [
-    SEPARATOR,
-    `Path: ${file.path}`,
-    SEPARATOR,
-    file.kind === 'text'
-      ? file.content
-      : `<binary> ${hashMd5Hex(file.content)}`,
-    SEPARATOR,
-  ].join('\n');
+function fileToTestString(path: string, content: string): string {
+  return [SEPARATOR, `Path: ${path}`, SEPARATOR, content, SEPARATOR].join('\n');
+}
+
+function normalizeBinaryFile(file: FilePathBinaryContent): FilePathTextContent {
+  return {
+    path: file.path,
+    content: `<binary> ${hashMd5Hex(file.content)}`,
+  };
 }
 
 const SEPARATOR = '-'.repeat(20);
