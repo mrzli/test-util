@@ -4,6 +4,12 @@ All notable changes to the "test-util" will be documented in this file.
 
 ## [Unreleased]
 
+## [0.0.8] - 2023-05-11
+
+### Changed
+
+- **Breaking:** Change `runFileComparisonTestBody()` to `getFileSystemTestCaseRuns()` to have `options` parameter.
+
 ## [0.0.7] - 2023-05-11
 
 ### Changed
