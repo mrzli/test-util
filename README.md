@@ -112,6 +112,7 @@ npm install --save-dev @gmjs/test-util
     sharedDirectoryRelativePath: string
   ): Promise<TestComparisonStrings>
   ```
+
   - Description
     - Helper function, used to create test body for file comparison tests.
   - Parameters
@@ -123,6 +124,7 @@ npm install --save-dev @gmjs/test-util
         - These are the `actual` files produced, and when converted to a string inside `fileComparisonTestBody()`, the are the `actual` part of the test (`expect`) equality check, which are compared to `expected`.
     - `sharedDirectoryRelativePath: string` - Simply passed to internally called `readFakeFiles()`.
   - Examples
+
     ```ts
     describe('generate', () => {
       const testAssetsDirectory = join(__dirname, 'test-assets');
@@ -149,5 +151,3 @@ npm install --save-dev @gmjs/test-util
     ```
 
 ---
-
-

@@ -1,5 +1,5 @@
 import { relative } from 'node:path';
-import { findFsEntriesSync } from '@gmjs/fs-sync';
+import { findFileSystemEntriesSync } from '@gmjs/fs-sync';
 import { FilePathStats } from '@gmjs/fs-shared';
 
 export interface FindFileSystemTestCaseDirectoriesOptions {
@@ -13,7 +13,7 @@ export function findFileSystemTestCaseDirectories(
   const finalOptions = getFinalOptions(options);
   const { testCaseRegex } = finalOptions;
 
-  const testAssetsSubdirectories = findFsEntriesSync(rootDirectory, {
+  const testAssetsSubdirectories = findFileSystemEntriesSync(rootDirectory, {
     depthLimit: 0,
   });
 
