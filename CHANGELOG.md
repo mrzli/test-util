@@ -4,6 +4,17 @@ All notable changes to the "test-util" will be documented in this file.
 
 ## [Unreleased]
 
+## [0.0.7] - 2023-05-11
+
+### Changed
+
+- **Breaking:** Rename `fileComparisonTestBody()` to `runFileComparisonTestBody()`.
+- **Breaking:** Change input parameters of `filesToTestString()`. It now accepts a single `files: FilesContainer` parameter.
+
+### Added
+
+- Add `getFileSystemTestCaseRuns()` function.
+
 ## [0.0.6] - 2023-05-11
 
 ### Changed

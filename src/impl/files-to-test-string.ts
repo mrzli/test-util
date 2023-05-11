@@ -1,13 +1,11 @@
 import { FilePathBinaryContent, FilePathTextContent } from '@gmjs/fs-shared';
 import { hashMd5Hex } from '@gmjs/crypto';
+import { FilesContainer } from '../types';
 
-export function filesToTestString(
-  textFiles: readonly FilePathTextContent[],
-  binaryFiles: readonly FilePathBinaryContent[]
-): string {
+export function filesToTestString(files: FilesContainer): string {
   const normalizedFiles: FilePathTextContent[] = [
-    ...textFiles,
-    ...binaryFiles.map((file) => normalizeBinaryFile(file)),
+    ...files.textFiles,
+    ...files.binaryFiles.map((file) => normalizeBinaryFile(file)),
   ];
   const sortedFiles = normalizedFiles.sort((a, b) =>
     a.path.localeCompare(b.path)

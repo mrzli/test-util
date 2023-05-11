@@ -1,6 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
 import { filesToTestString } from './files-to-test-string';
 import { FilePathBinaryContent, FilePathTextContent } from '@gmjs/fs-shared';
+import { FilesContainer } from '../types';
 
 describe('files-to-test-string', () => {
   it('should return a proper test string', () => {
@@ -22,6 +23,11 @@ describe('files-to-test-string', () => {
       },
     ];
 
+    const files: FilesContainer = {
+      textFiles,
+      binaryFiles,
+    };
+
     const expected =
       `
 --------------------
@@ -41,6 +47,6 @@ Some content 3
 --------------------
     `.trim() + '\n';
 
-    expect(filesToTestString(textFiles, binaryFiles)).toBe(expected);
+    expect(filesToTestString(files)).toBe(expected);
   });
 });

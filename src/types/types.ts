@@ -5,6 +5,11 @@ export interface FilesContainer {
   readonly binaryFiles: readonly FilePathBinaryContent[];
 }
 
+export interface TestCaseRun {
+  readonly name: string;
+  readonly run: () => Promise<TestComparisonStrings>;
+}
+
 export interface TestComparisonStrings {
   readonly expected: string;
   readonly actual: string;

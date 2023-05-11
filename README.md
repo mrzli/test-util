@@ -84,12 +84,7 @@ npm install --save-dev @gmjs/test-util
 
 ---
 
-- ```
-  findFsTestCaseDirectories(
-    rootDirectory: string,
-    options?: FindFsTestCaseDirectoriesOptions
-  ): readonly string[]
-  ```
+- `findFileSystemTestCaseDirectories(files: FilesContainer): readonly string[]`
   - Description
     - In `rootDirectory`, find all direct descendent directories, which represent test cases.
     - Directories are filtered by `options.testCaseRegex`.
@@ -105,7 +100,7 @@ npm install --save-dev @gmjs/test-util
 ---
 
 - ```
-  fileComparisonTestBody(
+  runFileComparisonTestBody(
     testCasesParentDirectory: string,
     exampleName: string,
     actualFunction: (testCaseDirectory: string) => Promise<FilesContainer>,
@@ -126,28 +121,53 @@ npm install --save-dev @gmjs/test-util
   - Examples
 
     ```ts
-    describe('generate', () => {
+    describe('test', () => {
       const testAssetsDirectory = join(__dirname, 'test-assets');
+      const TEST_CASES = findFsTestCaseDirectories(testAssetsDirectory);
 
-      describe('generate()', () => {
-        const TEST_CASES = findFsTestCaseDirectories(testAssetsDirectory);
+      for (const example of TEST_CASES) {
+        it(example, async () => {
+          const { expected, actual } = await runFileComparisonTestBody(
+            testAssetsDirectory,
+            example,
+            getActualFiles,
+            // relative to `<testAssetsDirectory>/<test-case>/expected/files`
+            // in this case resolves to `<testAssetsDirectory>/shared/files`
+            '../../../shared/files'
+          );
 
-        for (const example of TEST_CASES) {
-          it(JSON.stringify(example), async () => {
-            const { expected, actual } = await fileComparisonTestBody(
-              testAssetsDirectory,
-              example,
-              getActualFiles,
-              // relative to `<testAssetsDirectory>/<test-case>/expected/files`
-              // in this case resolves to `<testAssetsDirectory>/shared/files`
-              '../../../shared/files'
-            );
-
-            expect(actual).toBe(expected);
-          });
-        }
-      });
+          expect(actual).toBe(expected);
+        });
+      }
     });
     ```
 
 ---
+
+- ```
+  getFileSystemTestCaseRuns(
+    testCasesParentDirectory: string,
+    actualFunction: (testCaseDirectory: string) => Promise<FilesContainer>,
+    sharedDirectoryRelativePath: string
+  ): readonly TestCaseRun[]
+  ```
+  - Description
+    - Helper function, used to create test `run()` functions to be used in tests.
+    - In a way, this kind of an 'array' version of `runFileComparisonTestBody()` function.
+    - This function does not execute tests, nor does it execute the code under test. To actually execute code under test, the `run()` function returned here should be called.
+  - Parameters - Purpose of parameters is exactly the same as for same-names parameters in `runFileComparisonTestBody()`.
+  - Examples
+
+    ```ts
+    describe('test', () => {
+      const testCasesParentDirectory = join(__dirname, 'test-assets');
+      const testCaseRuns = getFileSystemTestCaseRuns(testCasesParentDirectory, getActualFiles, '../../..shared/files');
+
+      for (const testCaseRun of testCaseRuns) {
+        it(testCaseRun.name, async () => {
+          const { expected, actual } = await testCaseRun.run();
+          expect(actual).toBe(expected);
+        });
+      }
+    });
+    ```
