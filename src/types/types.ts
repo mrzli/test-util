@@ -1,8 +1,13 @@
 import { FilePathBinaryContent, FilePathTextContent } from '@gmjs/fs-shared';
 
-export interface FakeFiles {
+export interface FilesContainer {
   readonly textFiles: readonly FilePathTextContent[];
   readonly binaryFiles: readonly FilePathBinaryContent[];
+}
+
+export interface TestComparisonStrings {
+  readonly expected: string;
+  readonly actual: string;
 }
 
 // export const KIND_OF_FILE_CONTENT_LIST = ['text', 'binary'] as const;

@@ -1,2 +1,2 @@
-export * from './fake-files';
+export * from './types';
 export * from './path-mapping';

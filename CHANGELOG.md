@@ -4,6 +4,17 @@ All notable changes to the "test-util" will be documented in this file.
 
 ## [Unreleased]
 
+## [0.0.3] - 2023-05-11
+
+### Changed
+
+- **Breaking:** Change return value for `readFakeFiles()` function.
+
+### Added
+
+- Add `findFsTestCaseDirectories()` function.
+
+
 ## [0.0.2] - 2023-05-10
 
 ### Changed

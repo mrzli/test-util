@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import { readBinaryAsync, readTextAsync } from '@gmjs/fs-async';
-import { FakeFiles, PathMapping } from '../types';
+import { FilesContainer, PathMapping } from '../types';
 import { FilePathBinaryContent, FilePathTextContent } from '@gmjs/fs-shared';
 
 export interface ReadFakeFilesOptions {
@@ -10,7 +10,7 @@ export interface ReadFakeFilesOptions {
 export async function readFakeFiles(
   directory: string,
   options?: ReadFakeFilesOptions
-): Promise<FakeFiles> {
+): Promise<FilesContainer> {
   const finalOptions = getFinalOptions(options);
   const { sharedDirectoryRelativePath } = finalOptions;
 

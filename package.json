@@ -1,6 +1,6 @@
 {
   "name": "@gmjs/test-util",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Test utilities.",
   "author": {
     "name": "Goran Mržljak",
@@ -33,6 +33,7 @@
     "@gmjs/crypto": "^0.0.2",
     "@gmjs/fs-async": "^0.0.2",
     "@gmjs/fs-shared": "^0.0.2",
+    "@gmjs/fs-sync": "^0.0.1",
     "tslib": "^2.5.0"
   },
   "devDependencies": {

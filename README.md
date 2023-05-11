@@ -10,7 +10,7 @@ npm install --save-dev @gmjs/test-util
 
 ## Functions
 
-- `readFakeFiles(directory: string, options?: ReadFakeFilesOptions): Promise<readonly FilePathContentAny[]>`
+- `readFakeFiles(directory: string, options?: ReadFakeFilesOptions): Promise<FilesContainer>`
   - Description
     - Read `<directory>/path-mapping.json`. `path-mapping.json` contains a list of `testFile`-`path` entries.
     - For each entry in `path-mapping.json`, produce a path-content pair, where the path is specified by `path` and the content is the content of the file specified by `testFile`.
@@ -81,3 +81,23 @@ npm install --save-dev @gmjs/test-util
       <binary> 1234567890abcdef
       --------------------
       ```
+
+---
+
+- ```
+  export function findFsTestCaseDirectories(
+    rootDirectory: string,
+    options?: FindFsTestCaseDirectoriesOptions
+  ): readonly string[]
+  ```
+  - Description
+    - In `rootDirectory`, find all direct descendent directories, which represent test cases.
+    - Directories are filtered by `options.testCaseRegex`.
+  - Parameters
+    - `rootDirectory: string` - Root directory to search for test case directories.
+    - `options?: FindFsTestCaseDirectoriesOptions`
+      - Description - Options for finding test case directories.
+      - Fields
+        - `testCaseRegex: RegExp`
+          - Description - Regular expression to filter test case directories.
+          - Default - `/^example-/`
