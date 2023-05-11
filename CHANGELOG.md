@@ -4,6 +4,12 @@ All notable changes to the "test-util" will be documented in this file.
 
 ## [Unreleased]
 
+## [0.0.5] - 2023-05-11
+
+### Changed
+
+- **Breaking:** Rename `findFsTestCaseDirectories` to `findFileSystemTestCaseDirectories`. Similar rename to it's `options` parameter interface name.
+
 ## [0.0.4] - 2023-05-11
 
 ### Added

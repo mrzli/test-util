@@ -4,12 +4,12 @@ import { filesToTestString } from './files-to-test-string';
 import { readFakeFiles } from './read-fake-files';
 
 export async function fileComparisonTestBody(
-  testAssetsRootDirectory: string,
+  testCasesParentDirectory: string,
   exampleName: string,
   actualFunction: (testCaseDirectory: string) => Promise<FilesContainer>,
   sharedDirectoryRelativePath: string
 ): Promise<TestComparisonStrings> {
-  const testCaseDirectory = join(testAssetsRootDirectory, exampleName);
+  const testCaseDirectory = join(testCasesParentDirectory, exampleName);
 
   const testFiles = await readFakeFiles(join(testCaseDirectory, 'expected'), {
     sharedDirectoryRelativePath,

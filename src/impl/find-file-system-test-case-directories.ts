@@ -2,13 +2,13 @@ import { relative } from 'node:path';
 import { findFsEntriesSync } from '@gmjs/fs-sync';
 import { FilePathStats } from '@gmjs/fs-shared';
 
-export interface FindFsTestCaseDirectoriesOptions {
+export interface FindFileSystemTestCaseDirectoriesOptions {
   readonly testCaseRegex?: RegExp;
 }
 
-export function findFsTestCaseDirectories(
+export function findFileSystemTestCaseDirectories(
   rootDirectory: string,
-  options?: FindFsTestCaseDirectoriesOptions
+  options?: FindFileSystemTestCaseDirectoriesOptions
 ): readonly string[] {
   const finalOptions = getFinalOptions(options);
   const { testCaseRegex } = finalOptions;
@@ -30,8 +30,8 @@ export function findFsTestCaseDirectories(
 }
 
 function getFinalOptions(
-  options?: FindFsTestCaseDirectoriesOptions
-): Required<FindFsTestCaseDirectoriesOptions> {
+  options?: FindFileSystemTestCaseDirectoriesOptions
+): Required<FindFileSystemTestCaseDirectoriesOptions> {
   options = options ?? {};
 
   return {
