@@ -54,16 +54,24 @@ npm install --save-dev @gmjs/test-util
 
 - ```
   function filesToTestString(
-    textFiles: readonly FilePathTextContent[],
-    binaryFiles: readonly FilePathBinaryContent[]
+    files: FilesContainer,
+    missingFiles?: readonly string[],
   ): string
   ```
   - Description
     - Converts a list of path-content pairs to a string that can be used for comparison in tests.
     - For binary files, only a literal token `<binary>` and a hash are output for content.
     - Text and binary file lists are joined, then sorted by path, alphabetically, ascending.
+    - `missingFiles` parameter accepts a list of paths to files that are 'missing' from `files`.
+    - Such missing files are output with content `<MISSING_FILE>`.
+    - Missing files are used for cleaner diffs in tests, when comparing to other lists (which contain the files 'missing' here).
     - The produced format is as follows:
       ```
+      --------------------
+      Path: a-missing-files.ts
+      --------------------
+      <MISSING_FILE>
+      --------------------
       --------------------
       Path: file-1.ts
       --------------------

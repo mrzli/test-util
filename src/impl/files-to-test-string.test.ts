@@ -31,6 +31,11 @@ describe('files-to-test-string', () => {
     const expected =
       `
 --------------------
+Path: a-missing-file.txt
+--------------------
+<MISSING_FILE>
+--------------------
+--------------------
 Path: example2.bin
 --------------------
 <binary> 5946210c9e93ae37891dfe96c3e39614
@@ -45,8 +50,18 @@ Path: src/example3.txt
 --------------------
 Some content 3
 --------------------
+--------------------
+Path: very-last-file-also-missing.bin
+--------------------
+<MISSING_FILE>
+--------------------
     `.trim() + '\n';
 
-    expect(filesToTestString(files)).toBe(expected);
+    expect(
+      filesToTestString(files, [
+        'a-missing-file.txt',
+        'very-last-file-also-missing.bin',
+      ])
+    ).toBe(expected);
   });
 });

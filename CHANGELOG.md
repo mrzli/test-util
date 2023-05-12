@@ -4,6 +4,13 @@ All notable changes to the "test-util" will be documented in this file.
 
 ## [Unreleased]
 
+## [0.0.9] - 2023-05-12
+
+### Changed
+
+- **Breaking:** Test functions using will calculate the difference between actual and expected files, and fill in the other list with placeholder files for cleaner diffs.
+- `filesToTestString` now accepts an additional `missingFiles` parameter.
+
 ## [0.0.8] - 2023-05-11
 
 ### Changed
