@@ -4,6 +4,14 @@ All notable changes to the "test-util" will be documented in this file.
 
 ## [Unreleased]
 
+## [0.0.10] - 2023-08-16
+
+### Changed
+
+- Update dependencies.
+- Update publishing process.
+- Format code with `prettier`.
+
 ## [0.0.9] - 2023-05-12
 
 ### Changed

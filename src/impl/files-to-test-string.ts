@@ -4,7 +4,7 @@ import { FilesContainer } from '../types';
 
 export function filesToTestString(
   files: FilesContainer,
-  missingFiles?: readonly string[]
+  missingFiles?: readonly string[],
 ): string {
   const normalizedFiles: FilePathTextContent[] = [
     ...files.textFiles,
@@ -15,10 +15,10 @@ export function filesToTestString(
     })),
   ];
   const sortedFiles = normalizedFiles.sort((a, b) =>
-    a.path.localeCompare(b.path)
+    a.path.localeCompare(b.path),
   );
   const fileStrings = sortedFiles.map((element) =>
-    fileToTestString(element.path, element.content)
+    fileToTestString(element.path, element.content),
   );
 
   return fileStrings.join('\n') + '\n';

@@ -9,14 +9,14 @@ export interface ReadFakeFilesOptions {
 
 export async function readFakeFiles(
   directory: string,
-  options?: ReadFakeFilesOptions
+  options?: ReadFakeFilesOptions,
 ): Promise<FilesContainer> {
   const finalOptions = getFinalOptions(options);
   const { sharedDirectoryRelativePath } = finalOptions;
 
   const pathMappingContent = await getPathMappingContent(
     directory,
-    sharedDirectoryRelativePath
+    sharedDirectoryRelativePath,
   );
   const pathMapping: readonly PathMapping[] =
     parsePathMapping(pathMappingContent);
@@ -28,14 +28,14 @@ export async function readFakeFiles(
       .filter((entry) => entry.testFile.endsWith(TEXT_EXTENSION))
       .map(async (entry) => {
         const content = await readTextAsync(
-          join(filesDirectory, entry.testFile)
+          join(filesDirectory, entry.testFile),
         );
         return {
           kind: 'text',
           path: entry.path,
           content,
         };
-      })
+      }),
   );
 
   const binaryFiles: readonly FilePathBinaryContent[] = await Promise.all(
@@ -43,14 +43,14 @@ export async function readFakeFiles(
       .filter((entry) => entry.testFile.endsWith(BINARY_EXTENSION))
       .map(async (entry) => {
         const content = await readBinaryAsync(
-          join(filesDirectory, entry.testFile)
+          join(filesDirectory, entry.testFile),
         );
         return {
           kind: 'binary',
           path: entry.path,
           content: content,
         };
-      })
+      }),
   );
 
   return {
@@ -60,7 +60,7 @@ export async function readFakeFiles(
 }
 
 function getFinalOptions(
-  options: ReadFakeFilesOptions | undefined
+  options: ReadFakeFilesOptions | undefined,
 ): Required<ReadFakeFilesOptions> {
   options = options ?? {};
 
@@ -71,13 +71,13 @@ function getFinalOptions(
 
 async function getPathMappingContent(
   directory: string,
-  sharedDirectoryRelativePath: string
+  sharedDirectoryRelativePath: string,
 ): Promise<string> {
   const pathMappingPath = join(directory, PATH_MAPPING_FILE_NAME);
   const rawContent = await readTextAsync(pathMappingPath);
   return rawContent.replaceAll(
     SHARED_FILES_DIRECTORY_TOKEN,
-    sharedDirectoryRelativePath
+    sharedDirectoryRelativePath,
   );
 }
 
@@ -102,12 +102,12 @@ function validatePathMappingEntru(item: any): asserts item is PathMapping {
 
   if (typeof item.testFile !== 'string') {
     throw new TypeError(
-      "Path mapping entry should have a 'testFile' field of 'string' type."
+      "Path mapping entry should have a 'testFile' field of 'string' type.",
     );
   }
   if (typeof item.path !== 'string') {
     throw new TypeError(
-      "Path mapping entry should have a 'path' field of 'string' type."
+      "Path mapping entry should have a 'path' field of 'string' type.",
     );
   }
 
@@ -118,7 +118,7 @@ function validatePathMappingEntru(item: any): asserts item is PathMapping {
     !testFile.endsWith(BINARY_EXTENSION)
   ) {
     throw new TypeError(
-      `'testFile' field value must end with '${TEXT_EXTENSION}' or '${BINARY_EXTENSION}'.`
+      `'testFile' field value must end with '${TEXT_EXTENSION}' or '${BINARY_EXTENSION}'.`,
     );
   }
 }

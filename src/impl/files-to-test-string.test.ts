@@ -61,7 +61,7 @@ Path: very-last-file-also-missing.bin
       filesToTestString(files, [
         'a-missing-file.txt',
         'very-last-file-also-missing.bin',
-      ])
+      ]),
     ).toBe(expected);
   });
 });

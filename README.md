@@ -142,7 +142,7 @@ npm install --save-dev @gmjs/test-util
             getActualFiles,
             // relative to `<testAssetsDirectory>/<test-case>/expected/files`
             // in this case resolves to `<testAssetsDirectory>/shared/files`
-            { sharedDirectoryRelativePath: '../../../shared/files' }
+            { sharedDirectoryRelativePath: '../../../shared/files' },
           );
 
           expect(actual).toBe(expected);

@@ -11,7 +11,7 @@ export async function runFileComparisonTestBody(
   testCasesParentDirectory: string,
   exampleName: string,
   actualFunction: (testCaseDirectory: string) => Promise<FilesContainer>,
-  options?: RunFileComparisonTestBodyOptions
+  options?: RunFileComparisonTestBodyOptions,
 ): Promise<TestComparisonStrings> {
   const finalOptions = getFinalOptions(options);
 
@@ -21,7 +21,7 @@ export async function runFileComparisonTestBody(
     join(testCaseDirectory, 'expected'),
     {
       sharedDirectoryRelativePath: finalOptions.sharedDirectoryRelativePath,
-    }
+    },
   );
 
   const actualFiles = await actualFunction(testCaseDirectory);
@@ -36,14 +36,14 @@ export async function runFileComparisonTestBody(
 }
 
 function getFinalOptions(
-  options: RunFileComparisonTestBodyOptions | undefined
+  options: RunFileComparisonTestBodyOptions | undefined,
 ): RunFileComparisonTestBodyOptions {
   return options ?? {};
 }
 
 function getMissingFiles(
   files: FilesContainer,
-  compareAgainst: FilesContainer
+  compareAgainst: FilesContainer,
 ): readonly string[] {
   const compareAgainstSet: ReadonlySet<string> = new Set<string>([
     ...compareAgainst.textFiles.map((file) => file.path),

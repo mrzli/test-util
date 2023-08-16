@@ -8,7 +8,7 @@ export interface FindFileSystemTestCaseDirectoriesOptions {
 
 export function findFileSystemTestCaseDirectories(
   rootDirectory: string,
-  options?: FindFileSystemTestCaseDirectoriesOptions
+  options?: FindFileSystemTestCaseDirectoriesOptions,
 ): readonly string[] {
   const finalOptions = getFinalOptions(options);
   const { testCaseRegex } = finalOptions;
@@ -23,14 +23,14 @@ export function findFileSystemTestCaseDirectories(
       stats: item.stats,
     }))
     .filter(
-      (item) => item.stats.isDirectory() && testCaseRegex.test(item.path)
+      (item) => item.stats.isDirectory() && testCaseRegex.test(item.path),
     );
 
   return testCases.map((item) => item.path);
 }
 
 function getFinalOptions(
-  options?: FindFileSystemTestCaseDirectoriesOptions
+  options?: FindFileSystemTestCaseDirectoriesOptions,
 ): Required<FindFileSystemTestCaseDirectoriesOptions> {
   options = options ?? {};
 
