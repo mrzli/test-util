@@ -1,7 +1,7 @@
-import { join } from 'node:path';
 import { readBinaryAsync, readTextAsync } from '@gmjs/fs-async';
-import { FilesContainer, PathMapping } from '../types';
 import { FilePathBinaryContent, FilePathTextContent } from '@gmjs/fs-shared';
+import { join } from '@gmjs/path';
+import { FilesContainer, PathMapping } from '../types';
 
 export interface ReadFakeFilesOptions {
   readonly sharedDirectoryRelativePath?: string;

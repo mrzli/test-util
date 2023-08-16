@@ -1,4 +1,4 @@
-import { join } from 'node:path';
+import { join } from '@gmjs/path';
 import { FilesContainer, TestComparisonStrings } from '../types';
 import { filesToTestString } from './files-to-test-string';
 import { readFakeFiles } from './read-fake-files';
