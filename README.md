@@ -8,186 +8,364 @@ Some test utilities.
 npm install --save-dev @gmjs/test-util
 ```
 
-## Functions
+## API
 
-- `readFakeFiles(directory: string, options?: ReadFakeFilesOptions): Promise<FilesContainer>`
-  - Description
-    - Read `<directory>/path-mapping.json`. `path-mapping.json` contains a list of `testFile`-`path` entries.
-    - For each entry in `path-mapping.json`, produce a path-content pair, where the path is specified by `path` and the content is the content of the file specified by `testFile`.
-    - All files specified by `testFile` must have a `.txt` or `.bin` extension, which determines whether the file is read as text or binary.
-    - All files specified by `testFile` are relative to `<directory>/files`.
-    - You can refer to files outside of `<directory>/files` using `..` navigation in `testFile`.
-    - You can use a special token `<shared>` in `testFile` to refer to files in a shared directory (see `sharedDirectoryRelativePath` in `options` parameter).
-  - Parameters
-    - `directory: string`
-      - Description
-        - The directory specifying the fake file system.
-        - It should have the following structure.
-          ```
-          <directory>
-            files
-              file-1.txt
-              file-2.txt
-              file-3.bin
-            path-mapping.json
-          ```
-        - Note that you don't need subdirectories because you can use `path-mapping.json` to represent any path in the result (including file name). If you need subdirectories anyway, they are supported, just use proper `testFile`s in `path-mapping.json`.
-    - `options: ReadFakeFilesOptions`
-      - Description - Options for reading fake files.
-      - Fields
-        - `sharedDirectoryRelativePath: string`
-          - Description
-            - Path, relative from `<directory>/files` to a directory with shared files (to be used by `testFile`s in `path-mapping.json`). To access files in this directory, use `<shared>` token in `testFile`.
-            - Example (`path-mapping.json`):
-              ```json
-              [
-                {
-                  "testFile": "<shared>/shared-file.ts.txt",
-                  "path": "Shared file content."
-                }
-              ]
-              ```
-              In the above example, `<shared>` will simply be replaced with whatever is present in `sharedDirectoryRelativePath`
-          - Default - `'.'`
+### File Test Functions
 
----
+These are the high-level functions will do most of the work for you in the file test
 
-- ```
-  function filesToTestString(
-    files: FilesContainer,
-    missingFiles?: readonly string[],
-  ): string
-  ```
-  - Description
-    - Converts a list of path-content pairs to a string that can be used for comparison in tests.
-    - For binary files, only a literal token `<binary>` and a hash are output for content.
-    - Text and binary file lists are joined, then sorted by path, alphabetically, ascending.
-    - `missingFiles` parameter accepts a list of paths to files that are 'missing' from `files`.
-    - Such missing files are output with content `<MISSING_FILE>`.
-    - Missing files are used for cleaner diffs in tests, when comparing to other lists (which contain the files 'missing' here).
-    - The produced format is as follows:
-      ```
-      --------------------
-      Path: a-missing-files.ts
-      --------------------
-      <MISSING_FILE>
-      --------------------
-      --------------------
-      Path: file-1.ts
-      --------------------
-      export const SOME_VARIABLE = 'some value';
-      --------------------
-      --------------------
-      Path: some-dir/file-2.ts
-      --------------------
-      export const SOME_OTHER_VARIABLE = 'some other value';
-      --------------------
-      Path: this-is-a-binary-file.png
-      --------------------
-      <binary> 1234567890abcdef
-      --------------------
-      ```
+#### `getFileSystemTestCaseRuns(testCasesParentDirectory, actualFunction, options)`
 
----
+Helper function, used to create test `run()` functions to be used in tests.
 
-- `findFileSystemTestCaseDirectories(files: FilesContainer): readonly string[]`
-  - Description
-    - In `rootDirectory`, find all direct descendent directories, which represent test cases.
-    - Directories are filtered by `options.testCaseRegex`.
-  - Parameters
-    - `rootDirectory: string` - Root directory to search for test case directories.
-    - `options?: FindFsTestCaseDirectoriesOptions`
-      - Description - Options for finding test case directories.
-      - Fields
-        - `testCaseRegex: RegExp`
-          - Description - Regular expression to filter test case directories.
-          - Default - `/^example-/`
+In a way, this kind of an 'array' version of `runFileComparisonTestBody()` function.
 
----
+This function does not execute tests, nor does it execute the code under test. To actually execute code under test, you must call the `run()` function returned from this function.
 
-- ```
-  runFileComparisonTestBody(
-    testCasesParentDirectory: string,
-    exampleName: string,
-    actualFunction: (testCaseDirectory: string) => Promise<FilesContainer>,
-    options?: RunFileComparisonTestBodyOptions
-  ): Promise<TestComparisonStrings>
-  ```
+##### Parameters
 
-  - Description
-    - Helper function, used to create test body for file comparison tests.
-  - Parameters
-    - `testCasesParentDirectory: string` - Root directory with test cases.
-    - `exampleName: string` - Name of the single test case directory currently being tested.
-    - `actualFunction: (testCaseDirectory: string) => Promise<FilesContainer>`
-      - Description
-        - Function that takes the full path to test case, and returns the files generated by the code under test.
-        - These are the `actual` files produced, and when converted to a string inside `fileComparisonTestBody()`, the are the `actual` part of the test (`expect`) equality check, which are compared to `expected`.
-    - `options?: RunFileComparisonTestBodyOptions`
-      - Description - Options for running file comparison test body.
-      - Fields
-      - `sharedDirectoryRelativePath: string` - Same as in `readFakeFiles()`.
-  - Examples
+###### `testCasesParentDirectory: string`
 
-    ```ts
-    describe('test', () => {
-      const testAssetsDirectory = join(__dirname, 'test-assets');
-      const TEST_CASES = findFsTestCaseDirectories(testAssetsDirectory);
+Root directory with test cases.
 
-      for (const example of TEST_CASES) {
-        it(example, async () => {
-          const { expected, actual } = await runFileComparisonTestBody(
-            testAssetsDirectory,
-            example,
-            getActualFiles,
-            // relative to `<testAssetsDirectory>/<test-case>/expected/files`
-            // in this case resolves to `<testAssetsDirectory>/shared/files`
-            { sharedDirectoryRelativePath: '../../../shared/files' },
-          );
+###### `actualFunction: (testCaseDirectory: string) => Promise<FilesContainer>`
 
-          expect(actual).toBe(expected);
-        });
-      }
+This is the actual code under test. This function returns 'actual' files, which are then compared to 'expected' files.
+
+Function that takes the full path to test case, and returns the files generated by the code under test.
+
+###### `options?: FileSystemTestCaseRunsOptions`
+
+Options for creating test case runs. This is an optional parameter.
+
+Has the following structure:
+
+```ts
+interface FileSystemTestCaseRunsOptions {
+  readonly sharedDirectoryRelativePath?: string;
+  readonly testCaseRegex?: RegExp;
+}
+```
+
+- `sharedDirectoryRelativePath`
+
+Same as in `readFakeFiles()`.
+
+- `testCaseRegex`
+
+Same as in `findFileSystemTestCaseDirectories()`.
+
+##### Examples
+
+```ts
+describe('test', () => {
+  const testCasesParentDirectory = join(__dirname, 'test-assets');
+  const testCaseRuns = getFileSystemTestCaseRuns(testCasesParentDirectory, getActualFiles, {
+    sharedDirectoryRelativePath: '../../..shared/files',
+    // testCaseRegex: /^example-/, // this is the default, so it does not need to be specified
+  });
+
+  for (const testCaseRun of testCaseRuns) {
+    it(testCaseRun.name, async () => {
+      const { expected, actual } = await testCaseRun.run();
+      expect(actual).toBe(expected);
     });
-    ```
+  }
+});
+```
 
 ---
 
-- ```
-  getFileSystemTestCaseRuns(
-    testCasesParentDirectory: string,
-    actualFunction: (testCaseDirectory: string) => Promise<FilesContainer>,
-    options?: FileSystemTestCaseRunsOptions,
-  ): readonly TestCaseRun[]
-  ```
+#### `runFileComparisonTestBody(testCasesParentDirectory, exampleName, actualFunction, options)`
 
-  - Description
-    - Helper function, used to create test `run()` functions to be used in tests.
-    - In a way, this kind of an 'array' version of `runFileComparisonTestBody()` function.
-    - This function does not execute tests, nor does it execute the code under test. To actually execute code under test, the `run()` function returned here should be called.
-  - Parameters
-    - `testCasesParentDirectory: string` - Same as in `runFileComparisonTestBody()`.
-    - `actualFunction: (testCaseDirectory: string) => Promise<FilesContainer>` - Same as in `runFileComparisonTestBody()`.
-    - `options?: FileSystemTestCaseRunsOptions`
-      - Description - Options for creating test case runs.
-      - Fields
-        - `sharedDirectoryRelativePath: string` - Same as in `readFakeFiles()`.
-        - `testCaseRegex: RegExp` - Same as in `findFileSystemTestCaseDirectories()`.
-  - Examples
+Helper function, returns the `expected` and `actual` strings for a single test case.
 
-    ```ts
-    describe('test', () => {
-      const testCasesParentDirectory = join(__dirname, 'test-assets');
-      const testCaseRuns = getFileSystemTestCaseRuns(testCasesParentDirectory, getActualFiles, {
-        sharedDirectoryRelativePath: '../../..shared/files',
-        // testCaseRegex: /^example-/, // this is the default, so it does not need to be specified
-      });
+In other words, this function is the 'body' in the test. You can think of it a single-item version of `getFileSystemTestCaseRuns()`.
 
-      for (const testCaseRun of testCaseRuns) {
-        it(testCaseRun.name, async () => {
-          const { expected, actual } = await testCaseRun.run();
-          expect(actual).toBe(expected);
-        });
-      }
+This is an async function, to allow async reading of fake files, and to allow an async function for the `actualFunction` parameter.
+
+##### Parameters
+
+###### `testCasesParentDirectory: string`
+
+Root directory with test cases.
+
+###### `exampleName: string`
+
+Name of the test case (example). This is used to construct full path to the test case directory.
+
+###### `actualFunction: (testCaseDirectory: string) => Promise<FilesContainer>`
+
+This is the actual code under test. This function returns 'actual' files, which are then compared to 'expected' files.
+
+Function that takes the full path to test case, and returns the files generated by the code under test.
+
+###### `options?: RunFileComparisonTestBodyOptions`
+
+Options for running file comparison test body. This is an optional parameter.
+
+Has the following structure:
+
+```ts
+interface FileSystemTestCaseRunsOptions {
+  readonly sharedDirectoryRelativePath?: string;
+  readonly testCaseRegex?: RegExp;
+}
+```
+
+- `sharedDirectoryRelativePath`
+
+Same as in `readFakeFiles()`.
+
+- `testCaseRegex`
+
+Same as in `findFileSystemTestCaseDirectories()`.
+
+##### Examples
+
+```ts
+describe('test', () => {
+  const testAssetsDirectory = join(__dirname, 'test-assets');
+  const TEST_CASES = findFsTestCaseDirectories(testAssetsDirectory);
+
+  for (const example of TEST_CASES) {
+    it(example, async () => {
+      const { expected, actual } = await runFileComparisonTestBody(
+        testAssetsDirectory,
+        example,
+        getActualFiles, // this is the actual code under test
+        // relative to `<testAssetsDirectory>/<test-case>/expected/files`
+        // in this case resolves to `<testAssetsDirectory>/shared/files`
+        { sharedDirectoryRelativePath: '../../../shared/files' },
+      );
+
+      expect(actual).toBe(expected);
     });
-    ```
+  }
+});
+```
+
+---
+
+### File Test Helpers
+
+These are the low-level functions that are used by the high-level functions above, but you can also use them directly in your tests.
+
+#### `findFileSystemTestCaseDirectories(rootDirectory, options)`
+
+Finds all directories directly under `rootDirectory`. These directories represent test cases.
+
+You can filter the directories by providing a regular expression in `options.testCaseRegex`.
+
+##### Parameters
+
+###### `rootDirectory: string`
+
+Root directory to search for test cases.
+
+###### `options?: FindFsTestCaseDirectoriesOptions`
+
+Options for finding test case directories. This is an optional parameter.
+
+Has the following structure:
+
+```ts
+interface FindFsTestCaseDirectoriesOptions {
+  readonly testCaseRegex?: RegExp;
+}
+```
+
+- `testCaseRegex`
+
+Regular expression to filter test case directories.
+
+Default is `/^example-/`.
+
+---
+
+#### `readFakeFiles(directory, options)`
+
+Used for reading 'fake' files, and returning their contents in a [FilesContainer](#filescontainer) object.
+
+This is helpful for creating test cases for functions that generate multiple files, like something you would have in code that does project generation.
+
+Specifically, you can use this function to create the `expected` part of the test, which you can then compare to the `actual` part of the test, which is the result of the code under test.
+
+This function will look for a `path-mapping.json` file directly under the directory specified by the first parameter (`directory`).
+
+The `path-mapping.json` file should contain a list of `testFile`-`path` entries, in the following format:
+
+```json
+[
+  {
+    "testFile": "<shared>/shared-file.json.txt",
+    "path": "test-project/tsconfig.test.json"
+  },
+  {
+    "testFile": "index.ts.txt",
+    "path": "test-project/src/index.ts"
+  },
+  {
+    "testFile": "subdir/some-asset.png.bin",
+    "path": "test-project/assets/asset.png"
+  }
+]
+```
+
+The `testFile` is the path to a physical file which you will include in your test assets. This file contains the `expected` content. The path is relative to `<directory>/files`, where `<directory>` is specified in the first parameter to this `readFakeFiles()` function.
+
+The exception is if the `testFile` contains a special token `<shared>`. In that case, the file will be read from a shared directory.
+
+Shared directory is specified by the `sharedDirectoryRelativePath` option, which is provided inside the second (`options`) parameter. `sharedDirectoryRelativePath` itself is relative to `<directory>/files`.
+
+For example:
+
+- If `directory` is `/project/tests/test-01`.
+- If `sharedDirectoryRelativePath` is `../../shared`.
+- Then normal `testFile` paths will be relative to `/project/tests/test-01/files`.
+- And `testFile` paths containing `<shared>` will be relative to `/project/tests/shared` (`/project/tests/test-01/files/../../shared`).
+
+Shared directory is useful for sharing files between multiple test cases.
+
+In the example above, the test case directory structure would look like this:
+
+```
+project
+  tests
+    test-01
+      files
+        index.ts.txt
+        subdir
+          some-asset.png.bin
+      path-mapping.json
+    shared
+      shared-file.json.txt
+```
+
+All files specified by `testFile` must have a `.txt` or `.bin` extension, which determines whether the file is read as text or binary.
+
+The `path` values in `path-mapping.json` is the desired path of the file in the `expected` result, this is the path that we want to see in the actual result generated by the code under test.
+
+In other words, the `readFakeFiles()` function will read the content from `testFile` files, and combine that content with the associated `path` value to produce path-content pairs in the result.
+
+##### Parameters
+
+###### `directory: string`
+
+The root, or referent directory for the 'fake' file system. You can reference files outside of this directory using `..` navigation in `testFile`.
+
+All `testFile` paths are relative to:
+
+- `<directory>/files` if `<shared>` token is not used.
+- `join(<directory>/files, <sharedDirectoryRelativePath>)` if `<shared>` token is used.
+
+###### `options?: ReadFakeFilesOptions`
+
+Options for reading fake files. This is an optional parameter.
+
+Has the following structure:
+
+```ts
+interface ReadFakeFilesOptions {
+  readonly sharedDirectoryRelativePath?: string;
+}
+```
+
+- `sharedDirectoryRelativePath`
+
+Path, relative from `<directory>/files` to a directory with shared files (to be us`testFile`s in `path-mapping.json`). To access files in this directory, use `<shared>` token in `testFile`.
+
+Example (`path-mapping.json`):
+
+```json
+[
+  {
+    "testFile": "<shared>/shared-file.ts.txt",
+    "path": "test-project/src/file.ts"
+  }
+]
+```
+
+By default, `sharedDirectoryRelativePath` is `.`. This means that `testFile` entries with `<shared>` token will be resolved relative to `<directory>/files`.
+
+---
+
+#### `filesToTestString(files, missingFiles)`
+
+Converts a `FilesContainer` object to a string that can be used for comparison in tests.
+
+Also accepts a list of paths to files that are 'missing' from `files`. Such missing files are output with content `<MISSING_FILE>` in the comparison string. This allows for cleaner diffs in tests, when comparing to other files container (which contain the files 'missing' here).
+
+For text files, full content is output.
+
+For binary files, only a literal token `<binary>` and a hash are output in place of content.
+
+Files in the resulting string are sorted by path, alphabetically, ascending.
+
+Each path and content is delimited by a line of dashes (`-`) from above and below.
+
+Here is an example of the output:
+
+```
+--------------------
+Path: a-missing-files.ts
+--------------------
+<MISSING_FILE>
+--------------------
+--------------------
+Path: file-1.ts
+--------------------
+export const SOME_VARIABLE = 'some value';
+--------------------
+--------------------
+Path: some-dir/file-2.ts
+--------------------
+export const SOME_OTHER_VARIABLE = 'some other value';
+--------------------
+--------------------
+Path: this-is-a-binary-file.png
+--------------------
+<binary> 1234567890abcdef
+--------------------
+```
+
+##### Parameters
+
+###### `files: FilesContainer`
+
+Container with file path-content pairs, of type [FilesContainer](#filescontainer).
+
+###### `missingFiles?: readonly string[]`
+
+List of paths to files that are 'missing' from `files`.
+
+---
+
+### Types
+
+#### `FilesContainer`
+
+Container with file path-content pairs.
+
+Has the following structure:
+
+```ts
+interface FilesContainer {
+  readonly textFiles: readonly FilePathTextContent[];
+  readonly binaryFiles: readonly FilePathBinaryContent[];
+}
+```
+
+Items in the above array have essentially the following structure:
+
+```ts
+interface FilePathTextContent {
+  readonly path: string;
+  readonly content: string;
+}
+
+interface FilePathBinaryContent {
+  readonly path: string;
+  readonly content: Buffer;
+}
+```
