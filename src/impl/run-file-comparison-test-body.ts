@@ -1,7 +1,7 @@
 import { join } from '@gmjs/path';
 import { FilesContainer, TestComparisonStrings } from '../types';
 import { filesToTestString } from './files-to-test-string';
-import { readFakeFiles } from './read-fake-files';
+import { readFakeFiles } from './read-fake-files/read-fake-files';
 
 export interface RunFileComparisonTestBodyOptions {
   readonly sharedDirectoryRelativePath?: string;

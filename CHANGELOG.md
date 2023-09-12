@@ -4,6 +4,14 @@ All notable changes to the "test-util" will be documented in this file.
 
 ## [Unreleased]
 
+## [0.0.12] - 2023-09-12
+
+### Changed
+
+- Change the format of the `pathMapping` JSON. File mappings are now grouped into arbitrary groups.
+- Improve validation of path mapping JSON.
+- Update dependencies.
+
 ## [0.0.11] - 2023-08-16
 
 ### Changed
