@@ -4,38 +4,38 @@ import { join } from '@gmjs/path';
 import { FilesContainer, PathMappingEntry, PathMappingFile } from '../../types';
 import { parsePathMapping } from './parse-path-mapping';
 import { TEXT_EXTENSION, BINARY_EXTENSION } from './constants';
-
-export interface ReadFakeFilesOptions {
-  readonly sharedDirectoryRelativePath?: string;
-}
+import { CASES_DIRECTORY_NAME, SHARED_DIRECTORY_NAME } from '../util';
 
 export async function readFakeFiles(
-  directory: string,
-  options?: ReadFakeFilesOptions,
+  rootDirectory: string,
+  testCaseName: string,
 ): Promise<FilesContainer> {
-  const finalOptions = getFinalOptions(options);
-  const { sharedDirectoryRelativePath } = finalOptions;
-
-  const pathMappingContent = await getPathMappingContent(
-    directory,
-    sharedDirectoryRelativePath,
+  const pathMappingPath = join(
+    rootDirectory,
+    CASES_DIRECTORY_NAME,
+    testCaseName,
+    'expected',
+    'path-mapping.json',
   );
+  const pathMappingContent = await readTextAsync(pathMappingPath);
   const pathMapping: PathMappingFile = parsePathMapping(pathMappingContent);
-
-  const filesDirectory = join(directory, 'files');
 
   const textFiles: readonly FilePathTextContent[] = await Promise.all(
     pathMapping
       .flatMap((entry) => entry.files)
       .filter((entry) => entry.fr.endsWith('.' + TEXT_EXTENSION))
-      .map((entry) => pathMappingEntryToTextContent(entry, filesDirectory)),
+      .map((entry) =>
+        pathMappingEntryToTextContent(rootDirectory, testCaseName, entry),
+      ),
   );
 
   const binaryFiles: readonly FilePathBinaryContent[] = await Promise.all(
     pathMapping
       .flatMap((entry) => entry.files)
       .filter((entry) => entry.fr.endsWith('.' + BINARY_EXTENSION))
-      .map((entry) => pathMappingEntryToBinaryContent(entry, filesDirectory)),
+      .map((entry) =>
+        pathMappingEntryToBinaryContent(rootDirectory, testCaseName, entry),
+      ),
   );
 
   return {
@@ -45,10 +45,13 @@ export async function readFakeFiles(
 }
 
 async function pathMappingEntryToTextContent(
+  rootDirectory: string,
+  testCaseName: string,
   entry: PathMappingEntry,
-  filesDirectory: string,
 ): Promise<FilePathTextContent> {
-  const content = await readTextAsync(join(filesDirectory, entry.fr));
+  const content = await readTextAsync(
+    resolveFrFile(rootDirectory, testCaseName, entry.fr),
+  );
   return {
     path: entry.to,
     content,
@@ -56,37 +59,38 @@ async function pathMappingEntryToTextContent(
 }
 
 async function pathMappingEntryToBinaryContent(
+  rootDirectory: string,
+  testCaseName: string,
   entry: PathMappingEntry,
-  filesDirectory: string,
 ): Promise<FilePathBinaryContent> {
-  const content = await readBinaryAsync(join(filesDirectory, entry.fr));
+  const content = await readBinaryAsync(
+    resolveFrFile(rootDirectory, testCaseName, entry.fr),
+  );
   return {
     path: entry.to,
     content,
   };
 }
 
-function getFinalOptions(
-  options: ReadFakeFilesOptions | undefined,
-): Required<ReadFakeFilesOptions> {
-  options = options ?? {};
-
-  return {
-    sharedDirectoryRelativePath: options.sharedDirectoryRelativePath ?? '.',
-  };
+function resolveFrFile(
+  rootDirectory: string,
+  testCaseName: string,
+  fr: string,
+): string {
+  return SHARED_DIRECTORY_REGEX.test(fr)
+    ? join(
+        rootDirectory,
+        SHARED_DIRECTORY_NAME,
+        fr.replaceAll(SHARED_DIRECTORY_REGEX, '$1'),
+      )
+    : join(
+        rootDirectory,
+        CASES_DIRECTORY_NAME,
+        testCaseName,
+        'expected',
+        'files',
+        fr,
+      );
 }
 
-async function getPathMappingContent(
-  directory: string,
-  sharedDirectoryRelativePath: string,
-): Promise<string> {
-  const pathMappingPath = join(directory, PATH_MAPPING_FILE_NAME);
-  const rawContent = await readTextAsync(pathMappingPath);
-  return rawContent.replaceAll(
-    SHARED_FILES_DIRECTORY_TOKEN,
-    sharedDirectoryRelativePath,
-  );
-}
-
-const PATH_MAPPING_FILE_NAME = 'path-mapping.json';
-const SHARED_FILES_DIRECTORY_TOKEN = '<shared>';
+const SHARED_DIRECTORY_REGEX = /^<([\dA-Za-z]+(?:-[\dA-Za-z]+)*)>/g;

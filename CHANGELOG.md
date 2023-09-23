@@ -4,6 +4,13 @@ All notable changes to the "test-util" will be documented in this file.
 
 ## [Unreleased]
 
+## [0.0.13] - 2023-09-23
+
+### Changed
+
+- Refactor, improve and simplify the `getFileSystemTestCaseRuns` function, and rename it to `createFsTestCases`.
+- Remove all other functions from the public API.
+
 ## [0.0.12] - 2023-09-12
 
 ### Changed

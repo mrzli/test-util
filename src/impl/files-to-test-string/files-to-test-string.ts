@@ -1,6 +1,6 @@
 import { FilePathBinaryContent, FilePathTextContent } from '@gmjs/fs-shared';
 import { hashMd5Hex } from '@gmjs/crypto';
-import { FilesContainer } from '../types';
+import { FilesContainer } from '../../types';
 
 export function filesToTestString(
   files: FilesContainer,

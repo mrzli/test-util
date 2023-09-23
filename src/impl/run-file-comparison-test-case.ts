@@ -2,26 +2,19 @@ import { join } from '@gmjs/path';
 import { FilesContainer, TestComparisonStrings } from '../types';
 import { filesToTestString } from './files-to-test-string';
 import { readFakeFiles } from './read-fake-files/read-fake-files';
+import { CASES_DIRECTORY_NAME } from './util';
 
-export interface RunFileComparisonTestBodyOptions {
-  readonly sharedDirectoryRelativePath?: string;
-}
-
-export async function runFileComparisonTestBody(
-  testCasesParentDirectory: string,
-  exampleName: string,
+export async function runFileComparisonTestCase(
+  rootDirectory: string,
+  testCaseName: string,
   actualFunction: (testCaseDirectory: string) => Promise<FilesContainer>,
-  options?: RunFileComparisonTestBodyOptions,
 ): Promise<TestComparisonStrings> {
-  const finalOptions = getFinalOptions(options);
+  const expectedFiles = await readFakeFiles(rootDirectory, testCaseName);
 
-  const testCaseDirectory = join(testCasesParentDirectory, exampleName);
-
-  const expectedFiles = await readFakeFiles(
-    join(testCaseDirectory, 'expected'),
-    {
-      sharedDirectoryRelativePath: finalOptions.sharedDirectoryRelativePath,
-    },
+  const testCaseDirectory = join(
+    rootDirectory,
+    CASES_DIRECTORY_NAME,
+    testCaseName,
   );
 
   const actualFiles = await actualFunction(testCaseDirectory);
@@ -33,12 +26,6 @@ export async function runFileComparisonTestBody(
     expected: filesToTestString(expectedFiles, missingFromExpectedFiles),
     actual: filesToTestString(actualFiles, missingFromActualFiles),
   };
-}
-
-function getFinalOptions(
-  options: RunFileComparisonTestBodyOptions | undefined,
-): RunFileComparisonTestBodyOptions {
-  return options ?? {};
 }
 
 function getMissingFiles(
