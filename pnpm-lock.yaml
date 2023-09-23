@@ -46,6 +46,9 @@ devDependencies:
   '@types/eslint':
     specifier: ^8.44.2
     version: 8.44.2
+  '@types/node':
+    specifier: ^20.6.0
+    version: 20.6.0
   '@typescript-eslint/eslint-plugin':
     specifier: ^6.7.0
     version: 6.7.0(@typescript-eslint/parser@6.7.0)(eslint@8.49.0)(typescript@5.2.2)

@@ -32,17 +32,17 @@ function getMissingFiles(
   files: FilesContainer,
   compareAgainst: FilesContainer,
 ): readonly string[] {
-  const compareAgainstSet: ReadonlySet<string> = new Set<string>([
-    ...compareAgainst.textFiles.map((file) => file.path),
-    ...compareAgainst.binaryFiles.map((file) => file.path),
+  const filesSet: ReadonlySet<string> = new Set<string>([
+    ...files.textFiles.map((file) => file.path),
+    ...files.binaryFiles.map((file) => file.path),
   ]);
 
   return [
-    ...files.textFiles
-      .filter((file) => !compareAgainstSet.has(file.path))
+    ...compareAgainst.textFiles
+      .filter((file) => !filesSet.has(file.path))
       .map((file) => file.path),
-    ...files.binaryFiles
-      .filter((file) => !compareAgainstSet.has(file.path))
+    ...compareAgainst.binaryFiles
+      .filter((file) => !filesSet.has(file.path))
       .map((file) => file.path),
   ];
 }
