@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 import { filesToTestString } from './files-to-test-string';
-import { FilePathBinaryContent, FilePathTextContent } from '@gmjs/fs-shared';
+import { FilePathBinaryContent, FilePathTextContent } from '@gmjs/file-system';
 import { FilesContainer } from '../../types';
 
 describe('files-to-test-string', () => {

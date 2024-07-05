@@ -1,5 +1,9 @@
-import { readBinaryAsync, readTextAsync } from '@gmjs/fs-async';
-import { FilePathBinaryContent, FilePathTextContent } from '@gmjs/fs-shared';
+import {
+  FilePathBinaryContent,
+  FilePathTextContent,
+  readBinaryAsync,
+  readTextAsync,
+} from '@gmjs/file-system';
 import { join } from '@gmjs/path';
 import { FilesContainer, PathMappingEntry, PathMappingFile } from '../../types';
 import { parsePathMapping } from './parse-path-mapping';

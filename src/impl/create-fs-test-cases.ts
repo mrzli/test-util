@@ -1,8 +1,7 @@
-import { join, relative } from 'node:path';
-import { findFileSystemEntriesSync } from '@gmjs/fs-sync';
+import nodePath from 'node:path';
 import { FilesContainer, TestCaseRun, TestComparisonStrings } from '../types';
 import { runFileComparisonTestCase } from './run-file-comparison-test-case';
-import { FilePathStats } from '@gmjs/fs-shared';
+import { FilePathStats, findFileSystemEntriesSync } from '@gmjs/file-system';
 import { CASES_DIRECTORY_NAME } from './util';
 
 export function createFsTestCases(
@@ -24,7 +23,7 @@ export function createFsTestCases(
 }
 
 function findTestCaseDirectories(rootDirectory: string): readonly string[] {
-  const casesDirectory = join(rootDirectory, CASES_DIRECTORY_NAME);
+  const casesDirectory = nodePath.join(rootDirectory, CASES_DIRECTORY_NAME);
   const testAssetsSubdirectories = findFileSystemEntriesSync(casesDirectory, {
     depthLimit: 0,
   });
@@ -33,5 +32,5 @@ function findTestCaseDirectories(rootDirectory: string): readonly string[] {
     (item) => item.stats.isDirectory(),
   );
 
-  return testCases.map((item) => relative(casesDirectory, item.path));
+  return testCases.map((item) => nodePath.relative(casesDirectory, item.path));
 }

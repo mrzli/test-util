@@ -1,4 +1,4 @@
-import { FilePathBinaryContent, FilePathTextContent } from '@gmjs/fs-shared';
+import { FilePathBinaryContent, FilePathTextContent } from '@gmjs/file-system';
 import { hashMd5Hex } from '@gmjs/crypto';
 import { FilesContainer } from '../../types';
 

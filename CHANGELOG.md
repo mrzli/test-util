@@ -4,6 +4,14 @@ All notable changes to the "test-util" will be documented in this file.
 
 ## [Unreleased]
 
+## [0.0.15] - 2024-97-05
+
+### Changed
+
+- Update tooling and configurations.
+- Migrate to `@gmjs/file-system`.
+- Update dependencies.
+
 ## [0.0.14] - 2023-09-23
 
 ### Changed
