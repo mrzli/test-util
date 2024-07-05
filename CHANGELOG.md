@@ -10,6 +10,7 @@ All notable changes to the "test-util" will be documented in this file.
 
 - Update tooling and configurations.
 - Migrate to `@gmjs/file-system`.
+- Add utility functions for measuring pefromance (time).
 - Update dependencies.
 
 ## [0.0.14] - 2023-09-23
